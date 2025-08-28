@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"; // 
 import Home from "../screens/Home.js"; // Importa la pantalla de Sesión
 import ShowUser from "../screens/ShowUser.js"; // Importa la pantalla de Sesión
 import AddUser from "../screens/AddUser.js"; // Importa la pantalla de Sesión
-import TabNavigator from "./TabNavigator"; // Importa el navegador de pestañas
+import TabNavigator from "../navigation/TabNavigatior.js"; // Importa el navegador de pestañas
  
 export default function Navigation() {
   const Stack = createNativeStackNavigator(); // Crea una instancia del stack navigator

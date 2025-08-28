@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert, Image } from "react-native";
-import Buttons from "../components/Buttons";
+import Buttons from "../components/Button";
  
 export default function Home({ navigation }) {
   const irShowUsers = () => {

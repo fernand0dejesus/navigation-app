@@ -4,11 +4,9 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  TouchableOpacity,
-  Alert,
   ScrollView,
 } from "react-native";
-import Buttons from "../components/Buttons";
+import Buttons from "../components/Button";
  
 import useFetchUser from "../hooks/useFetchUser";
  
