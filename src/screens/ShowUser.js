@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -34,12 +34,32 @@ const ShowUser = () => {
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // DEBUGGING: Agregar logs para verificar el estado
+  console.log('=== DEBUG ShowUser Component ===');
+  console.log('usuarios:', usuarios);
+  console.log('usuarios.length:', usuarios?.length);
+  console.log('loading:', loading);
+  console.log('typeof usuarios:', typeof usuarios);
+  console.log('Array.isArray(usuarios):', Array.isArray(usuarios));
+  
+  // Verificar el primer usuario si existe
+  if (usuarios && usuarios.length > 0) {
+    console.log('Primer usuario:', usuarios[0]);
+    console.log('Estructura del primer usuario:', Object.keys(usuarios[0]));
+  }
+
   // Se ejecuta cada vez que esta pantalla se enfoca
   useFocusEffect(
     useCallback(() => {
+      console.log('🔄 useFocusEffect ejecutándose - llamando fetchUsuarios');
       fetchUsuarios();
     }, [])
   );
+
+  // Efecto adicional para debug cuando cambien los usuarios
+  useEffect(() => {
+    console.log('👥 Usuarios actualizados:', usuarios.length, 'usuarios');
+  }, [usuarios]);
 
   // Función para eliminar usuario - SIMPLIFICADA
   const handleDeleteUser = (userId, userName) => {
@@ -117,6 +137,76 @@ const ShowUser = () => {
     Alert.alert("Prueba", `Acción: ${action} para usuario: ${user.nombre || user.name}`);
   };
 
+  // Función para renderizar cada item (con más debug)
+  const renderUserItem = ({ item, index }) => {
+    console.log(`Renderizando usuario ${index}:`, item);
+    
+    return (
+      <CardUser 
+        user={item} 
+        onEdit={() => handleEditUser(item)}
+        onDelete={() => handleDeleteUser(item.id, item.nombre || item.name)}
+      />
+    );
+  };
+
+  // Función de renderizado condicional mejorada
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#5C3D2E" />
+          <Text style={styles.loadingText}>Cargando usuarios...</Text>
+        </View>
+      );
+    }
+
+    // Si no hay usuarios
+    if (!usuarios || usuarios.length === 0) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyTitle}>No hay usuarios registrados</Text>
+          <Text style={styles.emptySubtitle}>
+            {usuarios === null ? 'Error al cargar datos' : 'La lista está vacía'}
+          </Text>
+          <TouchableOpacity 
+            style={styles.retryButton} 
+            onPress={() => {
+              console.log('🔄 Botón retry presionado');
+              fetchUsuarios();
+            }}
+          >
+            <Text style={styles.retryButtonText}>Recargar</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    // Si hay usuarios, mostrar la lista
+    return (
+      <FlatList
+        data={usuarios}
+        keyExtractor={(user, index) => {
+          const key = user.id ? user.id.toString() : `user-${index}`;
+          console.log(`Key para usuario ${index}:`, key);
+          return key;
+        }}
+        renderItem={renderUserItem}
+        contentContainerStyle={styles.listContainer}
+        onRefresh={() => {
+          console.log('🔄 Pull to refresh ejecutado');
+          fetchUsuarios();
+        }}
+        refreshing={loading}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>Lista vacía</Text>
+          </View>
+        )}
+      />
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Lista de Usuarios</Text>
@@ -124,43 +214,32 @@ const ShowUser = () => {
         Consulta los usuarios registrados desde la API
       </Text>
 
-      {!loading && (
+      {/* Información de debug */}
+      <View style={styles.debugContainer}>
+        <Text style={styles.debugText}>
+          Estado: {loading ? 'Cargando...' : 'Cargado'}
+        </Text>
+        <Text style={styles.debugText}>
+          Usuarios encontrados: {usuarios ? usuarios.length : 'null'}
+        </Text>
+        <Text style={styles.debugText}>
+          Tipo de datos: {Array.isArray(usuarios) ? 'Array' : typeof usuarios}
+        </Text>
+      </View>
+
+      {!loading && usuarios && usuarios.length > 0 && (
         <Text style={styles.counterText}>
           Total de usuarios: {usuarios.length}
         </Text>
       )}
 
-      {loading ? (
-        <ActivityIndicator
-          size="large"
-          color="#5C3D2E"
-          style={{ marginTop: 20 }}
-        />
-      ) : (
-        <>
-          <FlatList
-            data={usuarios}
-            keyExtractor={(user) => user.id.toString()}
-            renderItem={({ item }) => (
-              <CardUser 
-                user={item} 
-                onEdit={() => handleEditUser(item)}
-                onDelete={() => handleDeleteUser(item.id, item.nombre || item.name)}
-                // Funciones de prueba para verificar que los props llegan correctamente
-                // onEdit={() => testFunction('edit', item)}
-                // onDelete={() => testFunction('delete', item)}
-              />
-            )}
-            contentContainerStyle={styles.listContainer}
-          />
-          
-          {deleting && (
-            <View style={styles.loadingOverlay}>
-              <ActivityIndicator size="large" color="#5C3D2E" />
-              <Text style={styles.loadingText}>Eliminando usuario...</Text>
-            </View>
-          )}
-        </>
+      {renderContent()}
+      
+      {deleting && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#5C3D2E" />
+          <Text style={styles.overlayText}>Eliminando usuario...</Text>
+        </View>
       )}
 
       {/* Modal para editar usuario */}
@@ -243,6 +322,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 30,
+    flexGrow: 1,
   },
   title: {
     fontSize: 26,
@@ -265,6 +345,63 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
   },
+  // Estilos de debug
+  debugContainer: {
+    backgroundColor: '#FFF3CD',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#FFEAA7',
+  },
+  debugText: {
+    fontSize: 12,
+    color: '#6C7B7F',
+    marginBottom: 2,
+  },
+  // Loading container
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#5C3D2E',
+    fontSize: 16,
+  },
+  // Empty state
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 100,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#5C3D2E',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#8B7355',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: '#5C3D2E',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   // Overlay de carga para eliminación
   loadingOverlay: {
     position: 'absolute',
@@ -276,7 +413,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loadingText: {
+  overlayText: {
     marginTop: 10,
     color: '#5C3D2E',
     fontSize: 16,

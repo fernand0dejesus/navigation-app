@@ -6,6 +6,7 @@ const CardUser = ({ user, onEdit, onDelete }) => {
   // Debug: Verificar qué datos llegan
   console.log('CardUser recibió:', {
     user: user,
+    camposDisponibles: user ? Object.keys(user) : 'user es null',
     hasOnEdit: typeof onEdit === 'function',
     hasOnDelete: typeof onDelete === 'function'
   });
@@ -18,15 +19,26 @@ const CardUser = ({ user, onEdit, onDelete }) => {
         <Text style={styles.value}>{user?.id || 'Sin ID'}</Text>
         
         <Text style={styles.label}>Nombre:</Text>
-        <Text style={styles.value}>{user?.name || 'Sin nombre'}</Text>
+        {/* CAMBIO: usar 'nombre' en lugar de 'name' */}
+        <Text style={styles.value}>{user?.nombre || 'Sin nombre'}</Text>
         
         <Text style={styles.label}>Email:</Text>
-        <Text style={styles.value}>{user?.email || 'Sin email'}</Text>
+        {/* CAMBIO: usar 'correo' en lugar de 'email' */}
+        <Text style={styles.value}>{user?.correo || 'Sin email'}</Text>
         
-        {user?.phone && (
+        {/* CAMBIO: usar 'edad' para mostrar la edad */}
+        {user?.edad && (
+          <>
+            <Text style={styles.label}>Edad:</Text>
+            <Text style={styles.value}>{user.edad}</Text>
+          </>
+        )}
+        
+        {/* Si tienes teléfono, usar 'telefono' */}
+        {user?.telefono && (
           <>
             <Text style={styles.label}>Teléfono:</Text>
-            <Text style={styles.value}>{user.phone}</Text>
+            <Text style={styles.value}>{user.telefono}</Text>
           </>
         )}
       </View>
@@ -60,6 +72,13 @@ const CardUser = ({ user, onEdit, onDelete }) => {
         >
           <Text style={styles.buttonText}>Eliminar</Text>
         </TouchableOpacity>
+      </View>
+
+      {/* DEBUG: Mostrar todos los campos disponibles temporalmente */}
+      <View style={styles.debugContainer}>
+        <Text style={styles.debugText}>
+          DEBUG - Campos: {user ? JSON.stringify(Object.keys(user)) : 'No hay usuario'}
+        </Text>
       </View>
     </View>
   );
@@ -126,6 +145,17 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  // Estilos para debug temporal
+  debugContainer: {
+    marginTop: 10,
+    padding: 5,
+    backgroundColor: '#FFFACD',
+    borderRadius: 3,
+  },
+  debugText: {
+    fontSize: 10,
+    color: '#666',
   },
 });
 
