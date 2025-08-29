@@ -5,58 +5,72 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import Buttons from "../components/Button";
- 
 import useFetchUser from "../hooks/useFetchUser";
- 
+
 const AddUser = () => {
   const { nombre, edad, correo, setNombre, setEdad, setCorreo, handleGuardar } =
     useFetchUser();
- 
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Agregar Usuario</Text>
-      <Text style={styles.subtitle}>
-        Ingresa la información del nuevo usuario
-      </Text>
- 
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        value={nombre}
-        onChangeText={setNombre}
-        placeholderTextColor="#A1866F"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Edad"
-        value={edad}
-        onChangeText={setEdad}
-        keyboardType="numeric"
-        placeholderTextColor="#A1866F"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Correo"
-        value={correo}
-        onChangeText={setCorreo}
-        keyboardType="email-address"
-        placeholderTextColor="#A1866F"
-      />
- 
-      <Buttons text="Guardar" action={handleGuardar} />
-    </ScrollView>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.title}>Agregar Usuario</Text>
+          <Text style={styles.subtitle}>
+            Ingresa la información del nuevo usuario
+          </Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre"
+            value={nombre}
+            onChangeText={setNombre}
+            placeholderTextColor="#A1866F"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Edad"
+            value={edad}
+            onChangeText={setEdad}
+            keyboardType="numeric"
+            placeholderTextColor="#A1866F"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Correo"
+            value={correo}
+            onChangeText={setCorreo}
+            keyboardType="email-address"
+            placeholderTextColor="#A1866F"
+          />
+
+          <View style={styles.buttonWrapper}>
+            <Buttons texto="Guardar" action={handleGuardar} />
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
- 
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: "#EAD8C0",
-    alignItems: "center",
-    justifyContent: "center",
     padding: 20,
+    justifyContent: "flex-start",
   },
   title: {
     fontSize: 24,
@@ -81,18 +95,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     color: "#000",
   },
-  button: {
-    backgroundColor: "#5C3D2E",
-    padding: 15,
-    borderRadius: 10,
-    width: "100%",
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    textAlign: "center",
+  buttonWrapper: {
+    marginTop: 30,
+    alignItems: "center",
   },
 });
- 
+
 export default AddUser;

@@ -9,14 +9,14 @@ export default function Home({ navigation }) {
  
   return (
     <View style={styles.container}>
-      <Image source={require("../../assets/images.png")} style={styles.image} />
+      <Image source={require("../../assets/perfil.png")} style={styles.image} />
       <Text style={styles.title}>Bienvenido</Text>
       <Text style={styles.subtitle}>
         Esta aplicación nos servirá para comprender como utilizar la navegación
         y un tab menu en una aplicación móvil de react native
       </Text>
  
-      <Buttons text="ver todos los usuarios" action={irShowUsers} />
+      <Buttons texto="ver todos usuarios" action={irShowUsers} /> 
     </View>
   );
 }
@@ -24,38 +24,45 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EAD8C0",
+    backgroundColor: "#F5EFE6",
     alignItems: "center",
     justifyContent: "center",
+    padding: 20,
   },
   image: {
-    width: 100,
-    height: 100,
-    marginBottom: 10,
+    width: 120,
+    height: 120,
+    marginBottom: 20,
+    borderRadius: 10,
   },
   button: {
-    borderWidth: 2,
-    borderColor: "black",
-    width: 100,
+    width: "80%", // Responsive en móviles
+    paddingVertical: 14,
     borderRadius: 10,
-    backgroundColor: "darkblue",
+    backgroundColor: "#2E4374",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
   },
   buttonText: {
-    textAlign: "center",
-    color: "white",
-  },
-  title: {
-    fontSize: 24,
+    color: "#FFFFFF",
+    fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 5,
-    color: "#5C3D2E", // Brown color for the title
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+    color: "#3B2F2F",
   },
   subtitle: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "500",
     textAlign: "center",
-    marginVertical: 5,
-    color: "#5C3D2E", // Brown color for the title
+    marginBottom: 20,
+    color: "#7D5A50",
   },
+  
 });

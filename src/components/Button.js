@@ -1,129 +1,119 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 
-const Buttons = ({ 
-  texto, 
-  action, 
-  variant = 'primary', 
-  disabled = false, 
-  loading = false, 
+const Button = ({
+  texto,
+  action,
+  variant = 'primary',
+  disabled = false,
+  loading = false,
   style,
-  textStyle 
+  textStyle,
 }) => {
-  
   const getButtonStyle = () => {
-    const baseStyle = [styles.boton];
-    
-    switch (variant) {
-      case 'primary':
-        baseStyle.push(styles.primaryButton);
-        break;
-      case 'secondary':
-        baseStyle.push(styles.secondaryButton);
-        break;
-      case 'danger':
-        baseStyle.push(styles.dangerButton);
-        break;
-      case 'edit':
-        baseStyle.push(styles.editButton);
-        break;
-      case 'cancel':
-        baseStyle.push(styles.cancelButton);
-        break;
-      default:
-        baseStyle.push(styles.primaryButton);
+    const baseStyle = [styles.base];
+
+    if (styles[variant]) {
+      baseStyle.push(styles[variant]);
+    } else {
+      baseStyle.push(styles.primary);
     }
-    
+
     if (disabled) {
-      baseStyle.push(styles.disabledButton);
+      baseStyle.push(styles.disabled);
     }
-    
+
     if (style) {
       baseStyle.push(style);
     }
-    
+
     return baseStyle;
   };
 
   const getTextStyle = () => {
-    const baseStyle = [styles.texto];
-    
+    const baseText = [styles.baseText];
+
     if (variant === 'secondary' || variant === 'cancel') {
-      baseStyle.push(styles.secondaryText);
+      baseText.push(styles.secondaryText);
     }
-    
+
     if (disabled) {
-      baseStyle.push(styles.disabledText);
+      baseText.push(styles.disabledText);
     }
-    
+
     if (textStyle) {
-      baseStyle.push(textStyle);
+      baseText.push(textStyle);
     }
-    
-    return baseStyle;
+
+    return baseText;
   };
 
   return (
-    <TouchableOpacity 
-      onPress={disabled || loading ? null : action} 
+    <TouchableOpacity
+      onPress={disabled || loading ? null : action}
       style={getButtonStyle()}
       activeOpacity={disabled || loading ? 1 : 0.7}
+      accessibilityRole="button"
+      accessibilityState={{ disabled, busy: loading }}
     >
       {loading ? (
-        <ActivityIndicator 
-          size="small" 
-          color={variant === 'secondary' || variant === 'cancel' ? "#5C3D2E" : "#FFFFFF"} 
+        <ActivityIndicator
+          size="small"
+          color={variant === 'secondary' || variant === 'cancel' ? "#5C3D2E" : "#FFFFFF"}
         />
       ) : (
-        <Text style={getTextStyle()}>
-          {texto}
-        </Text>
+        <Text style={getTextStyle()}>{texto}</Text>
       )}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  boton: {
-    padding: 12,
-    borderRadius: 8,
+  base: {
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 44, // Mejor accesibilidad táctil
+    minHeight: 48,
   },
-  primaryButton: {
-    backgroundColor: "#5C3D2E", // Color consistente con la pantalla ShowUser
+
+  // Variants
+  primary: {
+    backgroundColor: "#2E4374", // azul oscuro elegante
   },
-  secondaryButton: {
+  secondary: {
     backgroundColor: "transparent",
     borderWidth: 2,
     borderColor: "#5C3D2E",
   },
-  dangerButton: {
-    backgroundColor: "#DC3545", // Rojo para acciones peligrosas como eliminar
+  danger: {
+    backgroundColor: "#D9534F", // rojo suave
   },
-  editButton: {
-    backgroundColor: "#007BFF", // Azul para editar
+  edit: {
+    backgroundColor: "#0275D8", // azul vibrante
   },
-  cancelButton: {
-    backgroundColor: "#CCC",
+  cancel: {
+    backgroundColor: "#EEEEEE",
   },
-  disabledButton: {
+  disabled: {
     backgroundColor: "#CCCCCC",
     borderColor: "#CCCCCC",
   },
-  texto: {
+
+  // Text
+  baseText: {
     fontSize: 16,
+    fontWeight: "600",
     textAlign: "center",
-    fontWeight: "bold",
     color: "#FFFFFF",
   },
   secondaryText: {
     color: "#5C3D2E",
   },
   disabledText: {
-    color: "#888888",
+    color: "#AAAAAA",
   },
 });
 
-export default Buttons;
+export default Button;
